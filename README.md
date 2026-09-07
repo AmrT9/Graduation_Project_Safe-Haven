@@ -1,496 +1,136 @@
-# SafeHaven 🛡️
+# SafeHaven 🛡️ — Privacy-Preserving Edge AI Safety Monitoring
 
-### Privacy-Preserving Edge AI System for Real-Time Safety Monitoring
+An edge-AI safety monitoring system that detects **falls** and **silent help-gesture requests** in real time — combining Computer Vision, IoT, a cloud backend, and a cross-platform mobile app — without relying on wearables or continuous cloud video surveillance.
 
-SafeHaven is an intelligent, privacy-preserving safety monitoring system designed to detect critical events such as **falls** and **silent requests for help** in real time.
+## Problem
 
-The system combines **Edge AI, Computer Vision, Deep Learning, IoT, Cloud Backend Services, and a Cross-Platform Mobile Application** to provide continuous safety monitoring without relying on wearable devices or continuous cloud video surveillance.
+Elderly individuals, children, and people living alone often need fall/emergency detection but reject continuous camera surveillance or wearables for privacy and comfort reasons. SafeHaven's goal: detect a fall or a silent request for help in real time, on-device, without ever streaming raw video to the cloud unless an incident is confirmed.
 
-SafeHaven is designed for elderly individuals, children, and people who may require immediate assistance in unsupervised environments.
+## Architecture
 
----
+A three-layer architecture balancing real-time performance, scalability, and privacy:
 
-## 🚀 Key Features
-
-- 🧠 Real-time AI-based fall detection
-- ✋ Silent emergency help gesture recognition
-- 🔒 Privacy-preserving edge processing
-- ⚡ Real-time emergency alerts
-- 📱 Cross-platform mobile application
-- 👥 Role-based access control
-- 🎥 Secure incident video capture and playback
-- 📡 Real-time communication between edge devices and mobile clients
-- ☁️ Cloud backend and persistent alert management
-- 🔄 Local alert queuing during temporary network outages
-- 🖥️ Edge AI deployment on Raspberry Pi
-
----
-
-## 🏗️ System Architecture
-
-SafeHaven follows a three-layer architecture designed to balance **real-time performance, scalability, and privacy**.
-
-### 1. Edge Layer
-
-A Raspberry Pi acts as the intelligent edge node.
-
-The edge device is responsible for:
-
-- Capturing live video using the Raspberry Pi Camera Module
-- Extracting pose and hand landmarks
-- Running AI-based fall detection
-- Running emergency gesture recognition
-- Performing local event validation
-- Generating alerts
-- Temporarily queuing alerts during network outages
-- Processing sensitive visual data locally
-
-Raw video is not continuously transmitted to the cloud.
-
----
-
-### 2. Communication Layer
-
-The system uses multiple communication technologies:
-
-- **FastAPI + WebSockets** for real-time bidirectional communication
-- **HTTPS** for secure backend communication
-- **Supabase** for authentication, database services, storage, and real-time synchronization
-- **Firebase Cloud Messaging (FCM)** for push notifications
-
----
-
-### 3. Application Layer
-
-The end-user interacts with SafeHaven through a cross-platform mobile application.
-
-The application provides:
-
-- Real-time alerts
-- Incident history
-- Secure incident video playback
-- User management
-- Monitoring zone configuration
-- Device health monitoring
-- Role-based access control
-- Care Receiver and Care Giver interfaces
-
----
-
-## 🤖 AI Pipeline
-
-SafeHaven contains two independent AI pipelines:
-
-### Fall Detection Pipeline
-
-```text
-Camera
-   ↓
-Pose Landmark Extraction
-   ↓
-Keypoint Normalization
-   ↓
-30-Frame Temporal Sequence
-   ↓
-LSTM Classifier
-   ↓
-Fall / Normal Activity
-   ↓
-Alert Decision
-
-The final deployed fall detection approach uses MediaPipe Pose + LSTM.
-
-Instead of relying directly on raw images, the system analyzes human skeletal landmarks to reduce computational requirements and improve privacy.
-
-The model processes 33 skeletal landmarks per frame, represented by:
-
-(x, y, z, visibility)
-
-A two-layer LSTM processes 30-frame temporal sequences.
-
-Final Fall Detection Results
-Metric	Result
-Accuracy	90.35%
-Precision	86.26%
-Recall	91.56%
-F1-Score	88.83%
-
-The high recall is particularly important for safety monitoring because missed fall events can have serious consequences.
-
-✋ Help Gesture Recognition
-
-SafeHaven provides a silent emergency mechanism through a predefined Y-shaped ASL help gesture.
-
-The pipeline is:
-
-Camera
-   ↓
-MediaPipe Hands
-   ↓
-21 Hand Landmarks
-   ↓
-63-Dimensional Feature Vector
-   ↓
-Neural Network Classifier
-   ↓
-Help / Normal Gesture
-   ↓
-Alert Decision
-
-The model uses the coordinates of the 21 hand landmarks rather than storing or processing raw images for classification.
-
-Help Gesture Results
-Metric	Result
-Accuracy	98.81%
-Precision	98.84%
-Recall	98.81%
-F1-Score	98.81%
-🔐 Privacy by Design
-
-Privacy is one of the core principles of SafeHaven.
-
-Instead of continuously uploading camera footage to cloud servers, AI processing is performed locally on the Raspberry Pi.
-
-The system primarily works with:
-
-Skeletal keypoints
-Hand landmarks
-Event metadata
-Confirmed incident media
-
-This significantly reduces the exposure of sensitive visual information.
-
-Raw video remains at the edge and is only transmitted when a confirmed incident requires associated footage.
-
-📱 Mobile Application
-
-The SafeHaven mobile application was developed using:
-
-React Native
-Expo
-TypeScript
-
-The application supports role-based access control and provides different capabilities for different users.
-
-Care Receiver
-Receive system interaction and monitoring services
-Trigger silent help requests using the emergency gesture
-Access relevant application features based on assigned permissions
-Care Giver / Security Personnel
-Receive real-time emergency alerts
-Review incident history
-View incident footage
-Monitor connected devices
-Respond to detected events
-Administrator
-Manage users
-Configure monitoring zones
-Manage edge devices
-Monitor device health
-Manage system configuration
-☁️ Backend Infrastructure
-
-SafeHaven uses Supabase as its Backend-as-a-Service platform.
-
-The backend provides:
-
-PostgreSQL database
-User authentication
-Role-based access control
-Real-time subscriptions
-Secure media storage
-Alert persistence
-Device management
-
-Firebase Cloud Messaging is used to deliver push notifications to registered mobile devices.
-
-The database follows a normalized relational design based on Third Normal Form (3NF).
-
-Main entities include:
-
-Users
-Devices
-Alerts
-Zones
-Media
-⚡ Edge Performance
-
-SafeHaven was evaluated on a Raspberry Pi 4 with 4 GB RAM.
-
-Hardware
-Raspberry Pi 4
-4 GB RAM
-Raspberry Pi Camera Module 3
-32 GB microSD Card
-Wi-Fi 802.11ac
-Raspberry Pi OS 64-bit
-Software
-Python
-PyTorch
-OpenCV
-MediaPipe
-Ultralytics
-TensorFlow Lite
-React Native
-TypeScript
-Supabase
-FastAPI
-Firebase Cloud Messaging
-Inference Performance
-Pipeline	Latency	FPS
-Help Gesture Recognition	~25 ms	~40 FPS
-Fall Detection	~60 ms	~16–17 FPS
-Combined Pipeline	~75 ms	~13–14 FPS
-
-The combined pipeline maintains practical real-time performance while running both detection systems simultaneously on the Raspberry Pi.
-
-🧪 Dataset
-Fall Detection Dataset
-
-A custom fall detection dataset was created to represent different human activities and fall scenarios.
-
-The dataset includes:
-
-Walking
-Sitting
-Lying down
-Forward falls
-Backward falls
-Lateral falls
-Different camera angles
-Different lighting conditions
-Different room layouts
-
-The final MediaPipe Pose + LSTM evaluation used 5,939 labeled sequences, including:
-
-3,451 ADL sequences
-2,488 Fall sequences
-Help Gesture Dataset
-
-The gesture recognition dataset contains:
-
-300 positive samples
-300 negative samples
-
-The system uses MediaPipe hand landmarks instead of raw image data.
-
-Each hand is represented using:
-
-21 landmarks × 3 coordinates = 63 features
-
-Coordinates are normalized relative to the wrist to improve translation invariance.
-
-🔄 System Workflow
+```
                 ┌─────────────────────┐
-                │   Raspberry Pi      │
-                │     Edge Node       │
-                └──────────┬──────────┘
-                           │
+                │   Raspberry Pi 4    │   Edge Layer
+                │   (camera + AI)     │   - pose/hand landmark extraction
+                └──────────┬──────────┘   - fall + gesture inference
+                           │                - local alert generation & queuing
                     Camera Input
                            │
               ┌────────────┴────────────┐
-              │                         │
               ▼                         ▼
        MediaPipe Pose            MediaPipe Hands
               │                         │
               ▼                         ▼
-        LSTM Model              Gesture Model
+        LSTM Model              Gesture Classifier
               │                         │
               └────────────┬────────────┘
                            ▼
                  Alert Decision Module
                            │
                            ▼
-                  FastAPI / WebSocket
+               FastAPI + WebSockets (real-time)   Communication Layer
                            │
-                           ▼
-                       Supabase
+                       Supabase (auth, DB, storage, realtime)
                            │
                   ┌────────┴────────┐
-                  │                 │
                   ▼                 ▼
-                 FCM          Mobile Application
-                  │                 │
-                  └───────► Alerts ◄┘
-🧠 Model Development
+      Firebase Cloud Messaging   Mobile Application       Application Layer
+                  │                 │       (React Native + Expo + TypeScript)
+                  └───────► Alerts ◄┘       Care Receiver / Care Giver / Admin roles
+```
 
-Multiple approaches were evaluated during development.
+**Edge layer:** Raspberry Pi 4 captures video, extracts pose/hand landmarks, runs both AI models locally, and only ever sends confirmed-incident footage upstream — raw video never leaves the device continuously.
 
-Approach	Accuracy	Recall	Status
-ROI + YOLOv10	85.0%	87.0%	Abandoned
-YOLOv8 + LSTM	81.84%	76%	Baseline
-MediaPipe Pose + LSTM	90.35%	91.56%	Final Model
-Why the Final Model?
+## Dataset
 
-The MediaPipe Pose + LSTM approach provided the best balance between:
+**Fall detection:** a custom dataset covering walking, sitting, lying down, and forward/backward/lateral falls across multiple camera angles, lighting conditions, and room layouts. Final MediaPipe Pose + LSTM evaluation used **5,939 labeled sequences** (3,451 ADL / 2,488 fall).
 
-Detection accuracy
-Fall recall
-Computational efficiency
-Privacy
-Raspberry Pi deployment feasibility
+**Help gesture:** 300 positive + 300 negative samples of a predefined Y-shaped ASL help gesture, represented as 21 hand landmarks × 3 coordinates (63-dim feature vector), normalized relative to the wrist.
 
-The earlier YOLO-based approaches were more computationally demanding and were not suitable for continuous edge deployment.
+## Tech Stack
 
-📂 Project Structure
-SafeHaven/
-│
-├── app/                    # React Native mobile application
-│
-├── src/                    # Application components,
-│                           # providers, themes and utilities
-│
-├── integration/            # Edge/backend integration
-│
-├── supabase/               # Database migrations and backend functions
-│
-├── assets/                 # Application assets
-│
-├── package.json            # Project dependencies
-├── package-lock.json
-├── app.json
-├── tsconfig.json
-│
-└── README.md
-🛠️ Technology Stack
-Artificial Intelligence & Computer Vision
-Python
-PyTorch
-TensorFlow Lite
-MediaPipe
-Ultralytics YOLO
-OpenCV
-LSTM
-Deep Neural Networks
-Edge Computing
-Raspberry Pi 4
-Raspberry Pi Camera Module 3
-Raspberry Pi OS
-Mobile Development
-React Native
-Expo
-TypeScript
-Backend & Cloud
-Supabase
-PostgreSQL
-FastAPI
-WebSockets
-Firebase Cloud Messaging
-REST APIs
-HTTPS
-Development Tools
-Git
-GitHub
-Git LFS
-🎯 Project Objectives
+| Layer | Tools |
+|---|---|
+| AI / CV | Python, PyTorch, TensorFlow Lite, MediaPipe, Ultralytics YOLO, OpenCV, LSTM |
+| Edge | Raspberry Pi 4 (4GB), Raspberry Pi Camera Module 3, Raspberry Pi OS 64-bit |
+| Mobile | React Native, Expo, TypeScript |
+| Backend / Cloud | Supabase (PostgreSQL, auth, storage, realtime), FastAPI, WebSockets, Firebase Cloud Messaging |
 
-SafeHaven was developed to:
+## How to Run
 
-Detect falls automatically without wearable devices.
-Provide a silent mechanism for users to request help.
-Perform AI processing locally to protect privacy.
-Deliver real-time alerts to authorized users.
-Provide a centralized mobile interface for monitoring and response.
-Deploy AI models on affordable edge hardware.
-Maintain system operation during temporary network failures.
-📊 Key Results
-Fall Detection
+> ⚠️ **Setup note:** this repository currently contains the technical report and documentation (`ITCS-GP25-83.docx`) but the source tree (`app/`, `src/`, `integration/`, `supabase/`) is packaged as `Safe Haven.zip`, tracked via Git LFS — and the LFS object isn't resolving through the standard GitHub download path right now. **Fix this before pointing recruiters at the repo**: either push the actual folders directly (not a zip) so GitHub renders the code browser normally, or make sure Git LFS is properly configured/paid so `git clone` pulls the real files instead of a pointer. A repo that looks empty when someone opens it is worse than no repo — this is priority #1 for this project.
 
-90.35% Accuracy
+Once the source is properly available, the intended setup is:
+1. **Edge node:** deploy the AI pipeline (pose/gesture models + alert logic) to a Raspberry Pi 4 with the camera module attached.
+2. **Backend:** provision a Supabase project (DB schema + auth) and a FastAPI service for real-time WebSocket communication.
+3. **Mobile app:** `expo start` from the `app/` directory, pointed at your Supabase/FastAPI endpoints.
 
-91.56% Recall
+## Results
 
-88.83% F1-Score
+**Fall detection** (MediaPipe Pose + LSTM, final model):
 
-Help Gesture Recognition
+| Metric | Result |
+|---|---|
+| Accuracy | 90.35% |
+| Precision | 86.26% |
+| Recall | 91.56% |
+| F1-Score | 88.83% |
 
-98.81% Accuracy
+**Help gesture recognition:**
 
-98.81% Recall
+| Metric | Result |
+|---|---|
+| Accuracy | 98.81% |
+| Precision | 98.84% |
+| Recall | 98.81% |
+| F1-Score | 98.81% |
 
-Edge Performance
+**Model comparison during development:**
 
-~75 ms combined inference latency
+| Approach | Accuracy | Recall | Status |
+|---|---|---|---|
+| ROI + YOLOv10 | 85.0% | 87.0% | Abandoned |
+| YOLOv8 + LSTM | 81.84% | 76% | Baseline |
+| **MediaPipe Pose + LSTM** | **90.35%** | **91.56%** | **Final model** |
 
-~13–14 FPS combined pipeline
+**Edge performance (Raspberry Pi 4, 4GB RAM):**
 
-Architecture
+| Pipeline | Latency | FPS |
+|---|---|---|
+| Help gesture recognition | ~25 ms | ~40 |
+| Fall detection | ~60 ms | ~16–17 |
+| Combined pipeline | ~75 ms | ~13–14 |
 
-Edge AI + Cloud Backend + Cross-Platform Mobile Application
+> ⚠️ **Metric discrepancy resolved:** the graduation report's abstract states a fall-detection recall of 96.7%, which conflicts with the 91.56% reported in the results table above. The 91.56% figure is the one to use — it's internally consistent with the report's own claim of a "20.5% relative improvement over the YOLOv8+LSTM baseline (76% recall)": 91.56/76 = 1.205 (a 20.5% relative gain), while 96.7/76 would be a ~27% gain. The 96.7% in the abstract appears to be a stale number from an earlier draft that was never updated — fix it in the `.docx` report before submitting/sharing it further.
 
-🔮 Future Work
+## Privacy by Design
 
-Future improvements include:
+AI processing happens locally on the Raspberry Pi. The system works primarily with skeletal keypoints, hand landmarks, and event metadata — not raw video — and only transmits footage when a confirmed incident requires it.
 
-Multi-person tracking using DeepSORT or ByteTrack
-Audio-visual fall validation
-Improved nighttime monitoring using IR cameras
-Blood and injury detection
-Context-aware alert prioritization
-Improved occlusion handling
-Real-time video communication
-Text and voice communication
-Enhanced reliability and robustness
-Advanced remote monitoring capabilities
-⚠️ Current Limitations
+## Current Limitations
 
-The current prototype has several limitations:
+- Assumes a single monitored person (no multi-person tracking yet)
+- Severe occlusion can affect pose landmark detection
+- Very low-light environments may need IR-assisted cameras
+- Some rapid non-fall movements may trigger false alerts
+- Remote notification still depends on network availability
 
-The system primarily assumes a single monitored person.
-Severe occlusion can affect pose landmark detection.
-Very low-light environments may require IR-assisted cameras.
-Some rapid non-fall movements may produce false alerts.
-Remote notification still depends on network availability.
-Multi-person tracking is not currently implemented.
-🎓 Academic Project
+## What I Personally Built
 
-SafeHaven was developed as a Senior Graduation Project at:
+I was responsible for the AI models at the core of the system:
 
-Nile University
-School of Information Technology and Computer Science
-Computer Science Program
+- **Fall detection model:** the MediaPipe Pose + LSTM pipeline — keypoint extraction, temporal sequence construction, and the two-layer LSTM classifier that reached 91.56% recall.
+- **Help gesture recognition model:** the MediaPipe Hands pipeline and the neural network classifier over the 63-dimensional hand-landmark feature vector, reaching 98.81% accuracy.
+- **Model iteration:** evaluated and compared the earlier ROI+YOLOv10 and YOLOv8+LSTM approaches against the final MediaPipe+LSTM model to justify the final architecture choice on the accuracy/recall/edge-efficiency trade-off.
 
-👥 Team
+---
 
-SafeHaven Development Team
+**Team:** Shaden Mohamed Abdelsalam, Merna Khaled Mahmoud, Nouran Adel Ahmed, Amr Tarek Ismail, Gamal Mohamed, Omar Ashraf
+**Supervisor:** Dr. Ahmed Fathy Alnokrashy
+**Academic Project:** Senior Graduation Project, Nile University — School of Information Technology and Computer Science
 
-Shaden Mohamed Abdelsalam
-Merna Khaled Mahmoud
-Nouran Adel Ahmed
-Amr Tarek Ismail
-Gamal Mohamed
-Omar Ashraf
+## Disclaimer
 
-Supervisor: Dr. Ahmed Fathy Alnokrashy
-
-📄 Documentation
-
-The complete technical documentation contains detailed information about:
-
-Problem definition
-Literature review
-System requirements
-System architecture
-Use case design
-Database design
-AI methodology
-Dataset preparation
-Model development
-Experimental evaluation
-Performance analysis
-Limitations
-Future work
-
-Please refer to the project documentation included in this repository for the complete technical details.
-
-⚠️ Disclaimer
-
-SafeHaven is an academic research and engineering prototype.
-
-It is not intended to replace professional medical monitoring, emergency services, or clinical safety systems.
-
-⭐ Project Highlights
-
-SafeHaven combines Edge AI, Computer Vision, Deep Learning, IoT, Cloud Computing, and Mobile Development into a privacy-preserving real-time safety monitoring ecosystem.
-
-Built with ❤️ as a Senior Graduation Project at Nile University.
+SafeHaven is an academic research and engineering prototype. It is not intended to replace professional medical monitoring, emergency services, or clinical safety systems.
