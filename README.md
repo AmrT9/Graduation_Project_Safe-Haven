@@ -59,10 +59,6 @@ A three-layer architecture balancing real-time performance, scalability, and pri
 | Backend / Cloud | Supabase (PostgreSQL, auth, storage, realtime), FastAPI, WebSockets, Firebase Cloud Messaging |
 
 ## How to Run
-
-> ⚠️ **Setup note:** this repository currently contains the technical report and documentation (`ITCS-GP25-83.docx`) but the source tree (`app/`, `src/`, `integration/`, `supabase/`) is packaged as `Safe Haven.zip`, tracked via Git LFS — and the LFS object isn't resolving through the standard GitHub download path right now. **Fix this before pointing recruiters at the repo**: either push the actual folders directly (not a zip) so GitHub renders the code browser normally, or make sure Git LFS is properly configured/paid so `git clone` pulls the real files instead of a pointer. A repo that looks empty when someone opens it is worse than no repo — this is priority #1 for this project.
-
-Once the source is properly available, the intended setup is:
 1. **Edge node:** deploy the AI pipeline (pose/gesture models + alert logic) to a Raspberry Pi 4 with the camera module attached.
 2. **Backend:** provision a Supabase project (DB schema + auth) and a FastAPI service for real-time WebSocket communication.
 3. **Mobile app:** `expo start` from the `app/` directory, pointed at your Supabase/FastAPI endpoints.
